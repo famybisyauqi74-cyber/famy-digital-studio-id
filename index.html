@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <!-- Viewport: agar tampilan pas di layar HP -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Famy Digital Studio – Jasa Pembuatan Website untuk UMKM</title>
+  <meta name="description" content="Famy Digital Studio membuat website profil bisnis, katalog produk, dan landing page untuk UMKM dan bisnis kecil. Konsultasi gratis.">
+
+  <!-- Font gratis Google Fonts. Jika offline, browser memakai font cadangan. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ===== 1. VARIABEL (ubah warna di sini, seluruh website ikut berubah) ===== */
+    :root {
+      --navy: #0b1730;       /* latar gelap utama */
+      --navy-2: #13244a;     /* navy lebih terang untuk kartu */
+      --blue: #2f6bff;       /* aksen biru */
+      --blue-dark: #1f50d6;
+      --sky: #9fbdff;        /* biru muda untuk teks di latar gelap */
+      --white: #ffffff;
+      --mist: #f4f7fc;       /* putih kebiruan untuk latar section */
+      --text: #1b2742;
+      --muted: #5d6a85;
+      --line: #dfe5f1;
+      --font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+      --radius: 14px;
+    }
+
+    /* ===== 2. RESET & DASAR ===== */
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+    body { margin: 0; font-family: var(--font); color: var(--text); background: var(--white); line-height: 1.7; font-size: 1.0625rem; }
+    h1, h2, h3 { line-height: 1.15; margin: 0; letter-spacing: -.02em; }
+    h2 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 800; }
+    h3 { font-size: 1.2rem; font-weight: 700; }
+    p { margin: 0; }
+    a { color: inherit; }
+    ul { margin: 0; padding: 0; list-style: none; }
+    .container { width: min(1120px, 100% - 2.5rem); margin-inline: auto; }
+    section { padding: 3.5rem 0; }                 /* HP: lebih rapat; laptop diatur di bagian 14 */
+    .head { max-width: 640px; margin-bottom: 2rem; }
+    .head p { color: var(--muted); margin-top: .8rem; }
+    :focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+
+    /* ===== 3. TOMBOL ===== */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 48px; padding: .75rem 1.5rem; border-radius: 10px; font: inherit; font-weight: 700; font-size: 1rem; text-decoration: none; border: 2px solid transparent; cursor: pointer; transition: transform .2s, background .2s, box-shadow .2s;
+      /* Reset <button>: tanpa ini browser memberi latar abu-abu bawaan sehingga teks putih tak terbaca */
+      background: transparent; color: inherit; -webkit-appearance: none; appearance: none; text-align: center; line-height: 1.25;
+      width: 100%; /* HP: tombol selebar kolom agar mudah ditekan */ }
+    @media (hover: hover) { .btn:hover { transform: translateY(-2px); } }
+    .btn:active { transform: scale(.97); transition-duration: .08s; }  /* efek tekan responsif di HP */
+    .btn, .burger { -webkit-tap-highlight-color: transparent; }
+    .btn-primary { background: var(--blue-dark); color: var(--white); box-shadow: 0 8px 20px rgba(31,80,214,.3); }
+    .btn-primary:hover { background: #1a44b8; }
+    .btn-outline { border-color: rgba(255,255,255,.35); color: var(--white); }
+    .btn-outline:hover { background: rgba(255,255,255,.1); }
+    .btn-dark { border-color: var(--navy); color: var(--navy); }
+    .btn-dark:hover { background: var(--navy); color: var(--white); }
+
+    /* ===== 4. NAVBAR ===== */
+    header { --hh: 68px; position: sticky; top: 0; z-index: 50; background: rgba(11,23,48,.62); backdrop-filter: blur(10px); color: var(--white); transition: background .4s ease, box-shadow .4s ease; }
+    header.scrolled { --hh: 60px; background: rgba(11,23,48,.97); box-shadow: 0 8px 28px rgba(0,0,0,.28); }  /* kelas .scrolled diatur JavaScript */
+    header::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--blue); transform-origin: left; transform: scaleX(var(--sp, 0)); } /* garis progres scroll */
+    .nav { display: flex; align-items: center; justify-content: space-between; gap: 1rem; height: var(--hh, 68px); transition: height .3s ease; }
+    .logo { display: inline-flex; align-items: center; gap: .3em; /* gap = spasi antara "Famy" dan "Digital Studio" */ min-height: 44px; font-weight: 800; font-size: 1.15rem; text-decoration: none; letter-spacing: -.01em; }
+    .logo span { color: var(--sky); font-weight: 500; }
+    /* HP: menu tersembunyi, muncul sebagai dropdown saat tombol ☰ ditekan (kelas .open diatur JavaScript) */
+    .menu { display: flex; position: absolute; top: var(--hh, 68px); left: 0; right: 0; flex-direction: column; align-items: stretch; background: var(--navy); padding: .25rem 1.25rem 1.25rem;
+      /* tertutup: tak terlihat & tak bisa diklik; visibility juga menyingkirkan tautan dari urutan Tab */
+      visibility: hidden; opacity: 0; transform: translateY(-10px); pointer-events: none;
+      transition: opacity .25s ease, transform .25s ease, visibility 0s linear .25s; border-top: 1px solid rgba(255,255,255,.12); border-bottom: 1px solid rgba(255,255,255,.12); box-shadow: 0 20px 30px rgba(0,0,0,.35); }
+    .menu.open { visibility: visible; opacity: 1; transform: none; pointer-events: auto; transition-delay: 0s; }
+    .menu a { display: flex; align-items: center; min-height: 48px; text-decoration: none; font-size: 1rem; font-weight: 500; color: #cfd8ee; transition: color .2s; }
+    .menu a:hover, .menu a.active { color: var(--white); }
+    .menu .btn { justify-content: center; margin-top: .6rem; color: var(--white); }
+    .burger:active { background: rgba(255,255,255,.1); }
+    .burger { display: grid; border-radius: 10px; place-items: center; width: 44px; height: 44px; margin-right: -.6rem; background: none; border: 0; color: var(--white); font-size: 1.7rem; cursor: pointer; }
+
+    /* ===== 5. HERO ===== */
+    .hero { background: radial-gradient(900px 400px at 85% 0%, rgba(47,107,255,.35), transparent 70%), var(--navy); color: var(--white); padding: 3.5rem 0 4rem; overflow-x: clip; }
+    .hero-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: center; }
+    .hero h1 { font-size: clamp(2.1rem, 9vw, 3.2rem); font-weight: 800; }
+    .hero h1 em { font-style: normal; color: var(--sky); }
+    .hero p { color: #c3cde6; margin-top: 1.25rem; max-width: 48ch; font-size: 1.08rem; }
+    .actions { display: flex; flex-wrap: wrap; gap: .85rem; margin-top: 2rem; }
+    .hero-note { margin-top: 1.25rem; font-size: .93rem; color: #8fa0c4; }
+
+    /* Visual: tiruan jendela browser dibuat murni dengan HTML & CSS */
+    .browser { background: var(--white); border-radius: 16px; box-shadow: 0 30px 60px rgba(0,0,0,.4); overflow: hidden; transform: rotate(-1.5deg); width: 100%; max-width: 520px; margin-inline: auto; }
+    .browser-bar { display: flex; gap: 6px; align-items: center; padding: .7rem 1rem; background: #e9eef8; }
+    .browser-bar i { width: 10px; height: 10px; border-radius: 50%; background: #c4cde0; }
+    .browser-bar b { margin-left: .6rem; flex: 1; background: var(--white); border-radius: 6px; padding: .1rem .7rem; font-size: .8125rem; font-weight: 500; color: var(--muted); }
+    .browser-body { padding: 1.5rem; display: grid; gap: .9rem; }
+    .sk { border-radius: 8px; background: #e6ecf7; }
+    .sk.hero-sk { height: 110px; background: linear-gradient(120deg, var(--blue), #6b97ff); }
+    .sk.line { height: 12px; } .sk.w60 { width: 60%; } .sk.w80 { width: 80%; }
+    .sk-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: .7rem; }
+    .sk-row .sk { height: 64px; }
+    .sk.btn-sk { height: 30px; width: 90px; background: var(--navy); }
+    /* Animasi halus: kartu browser melayang pelan */
+    @keyframes float { 0%,100% { transform: rotate(-1.5deg) translateY(0); } 50% { transform: rotate(-1.5deg) translateY(-8px); } }
+    .browser { animation: float 6s ease-in-out infinite; }
+
+    /* ===== 6. LAYANAN ===== */
+    .cards { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+    .card { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.8rem; transition: transform .25s, box-shadow .25s; }
+    .card .ico { width: 46px; height: 46px; border-radius: 12px; background: #e8efff; color: var(--blue); display: grid; place-items: center; margin-bottom: 1.1rem; }
+    .card .ico svg { width: 24px; height: 24px; }
+    .card p { color: var(--muted); margin-top: .5rem; font-size: 1rem; }
+    .card ul { margin-top: 1rem; display: grid; gap: .35rem; font-size: .95rem; }
+    .card li::before { content: "✓"; color: var(--blue); font-weight: 800; margin-right: .5rem; }
+
+    /* ===== 7. PORTOFOLIO ===== */
+    .portfolio { background: var(--mist); }
+    .case { display: grid; grid-template-columns: 1fr; gap: 1.75rem; align-items: center; background: var(--white); border: 1px solid var(--line); border-radius: 20px; padding: 1.25rem; }
+    .case .shot { border-radius: 14px; background: linear-gradient(120deg, #16202a, #2f4858); padding: 1.5rem; color: var(--white); min-height: 200px; display: flex; flex-direction: column; justify-content: flex-end; position: relative; overflow: hidden; }
+    .case .shot::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 10px; background: repeating-linear-gradient(-45deg, #f2b705 0 14px, #16202a 14px 28px); }
+    .case .shot strong { font-size: clamp(1.6rem, 7vw, 2rem); line-height: 1.1; }
+    .case .shot span { color: #b9c3c9; margin-top: .4rem; }
+    .case h3 { font-size: 1.6rem; }
+    .case p { color: var(--muted); margin: .8rem 0 1.25rem; }
+    .tags { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.5rem; }
+    .tags li { background: #e8efff; color: var(--blue-dark); border-radius: 999px; padding: .2rem .8rem; font-size: .88rem; font-weight: 600; }
+    .small { font-size: .9rem; color: var(--muted); margin-top: 1rem; }
+
+    /* ===== 8. PROSES KERJA ===== */
+    .steps { display: grid; grid-template-columns: 1fr; gap: 0; counter-reset: langkah; }   /* HP: daftar vertikal */
+    .step { position: relative; padding: 0 0 1.75rem 3.4rem; }
+    .step::before { counter-increment: langkah; content: counter(langkah); position: absolute; top: 0; left: 0; width: 38px; height: 38px; border-radius: 50%; background: var(--navy); color: var(--white); display: grid; place-items: center; font-weight: 700; z-index: 1; }
+    .step::after { content: ""; position: absolute; top: 42px; bottom: 4px; left: 18px; width: 2px; background: var(--line); }
+    .step:last-child::after { display: none; }
+    .step p { color: var(--muted); font-size: .96rem; margin-top: .4rem; }
+
+    /* ===== 9. PAKET HARGA ===== */
+    .pricing { background: var(--navy); color: var(--white); }
+    .pricing .head p { color: #b4c0de; }
+    .plans { display: grid; grid-template-columns: 1fr; gap: 1.25rem; align-items: stretch; }
+    .plan { background: var(--navy-2); border: 1px solid rgba(255,255,255,.12); border-radius: 18px; padding: 2rem; display: flex; flex-direction: column; }
+    .plan.best { background: var(--white); color: var(--text); border-color: var(--white); }
+    .plan .label { align-self: flex-start; background: var(--blue-dark); color: var(--white); font-size: .9rem; font-weight: 700; border-radius: 999px; padding: .15rem .75rem; margin-bottom: .8rem; }
+    .plan .from { font-size: .9rem; color: #9fb0d4; margin-top: 1rem; }
+    .plan.best .from, .plan.best .desc { color: var(--muted); }
+    .plan .amount { font-size: 2.2rem; font-weight: 800; letter-spacing: -.03em; }
+    .plan .desc { color: #b4c0de; font-size: .97rem; margin-top: .4rem; }
+    .plan ul { margin: 1.4rem 0 1.8rem; display: grid; gap: .55rem; font-size: .97rem; flex: 1; }
+    .plan li::before { content: "✓"; color: var(--sky); font-weight: 800; margin-right: .5rem; }
+    .plan.best li::before { color: var(--blue); }
+    .plan .btn { width: 100%; }
+    .plan.best .btn-outline { border-color: var(--navy); color: var(--navy); }
+    .price-note { margin-top: 1.75rem; color: #9fb0d4; font-size: .95rem; max-width: 70ch; }
+
+    /* ===== 10. FAQ (memakai <details> bawaan HTML, tanpa JavaScript) ===== */
+    .faq-list { max-width: 780px; display: grid; gap: .8rem; }
+    details { border: 1px solid var(--line); border-radius: 12px; background: var(--white); transition: border-color .3s ease, box-shadow .3s ease; }
+    summary { cursor: pointer; padding: 1rem 1.25rem; min-height: 56px; font-weight: 700; list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-radius: 12px; -webkit-tap-highlight-color: transparent; }
+    summary::-webkit-details-marker { display: none; }
+    summary:active { background: var(--mist); }
+    /* Panah (chevron) digambar dengan CSS: menghadap bawah saat tertutup, berputar 180° menghadap atas saat terbuka */
+    summary::after { content: ""; flex: none; width: 10px; height: 10px; border-right: 2.5px solid var(--blue); border-bottom: 2.5px solid var(--blue); transform: translateY(-3px) rotate(45deg); transition: transform .35s cubic-bezier(.2,.7,.2,1); }
+    details.is-open summary::after { transform: translateY(3px) rotate(225deg); }
+    details.is-open { border-color: #b9caf5; box-shadow: 0 10px 24px rgba(11,23,48,.06); }
+    .faq-body { overflow: hidden; }   /* tinggi bagian ini dianimasikan oleh JavaScript */
+    .faq-body p { padding: 0 1.25rem 1.2rem; color: var(--muted); }
+
+    /* ===== 11. KONTAK ===== */
+    .contact { background: var(--mist); }
+    .contact-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; align-items: start; }
+    .contact-grid .head { margin: 0; }
+    form { background: var(--white); border: 1px solid var(--line); border-radius: 18px; padding: 1.25rem; display: grid; gap: 1.1rem; }
+    label { font-weight: 600; font-size: .95rem; display: grid; gap: .4rem; }
+    input, select, textarea { font: inherit; padding: .75rem .9rem; border: 1px solid #c8d1e4; border-radius: 10px; background: var(--white); color: var(--text); width: 100%; }
+    input:focus, select:focus, textarea:focus { outline: 3px solid rgba(47,107,255,.35); border-color: var(--blue); }
+    #notice { display: none; background: #fff6df; border: 1px solid #f0d58a; color: #6b4e00; border-radius: 10px; padding: .8rem 1rem; font-size: .93rem; }
+    #notice.show { display: block; }
+    .btn-wa { background: #15803d; color: var(--white); }
+    .btn-wa:hover { background: #166534; }
+
+    /* ===== 12. FOOTER ===== */
+    footer { background: #08112a; color: #94a3c6; padding: 2.5rem 0; font-size: .95rem; }
+    .foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; align-items: center; }
+    .foot strong { color: var(--white); }
+    .foot nav { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+    .foot a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; } .foot a:hover { color: var(--white); }
+
+    /* ===== 13. ANIMASI (ringan: hanya opacity & transform, tidak memicu pergeseran tata letak) ===== */
+    /* a) Muncul saat di-scroll. Memakai properti `translate` (bukan `transform`) agar tidak bentrok dengan hover. */
+    .reveal { opacity: 0; translate: 0 18px; transition: opacity .7s cubic-bezier(.2,.7,.2,1), translate .7s cubic-bezier(.2,.7,.2,1); }
+    .reveal.in { opacity: 1; translate: 0 0; }
+    /* Setelah selesai muncul (kelas .done dari JavaScript), transisi muncul dilepas; kartu kembali memakai transisi hover */
+    .reveal.done { transition: none; }
+    .card.reveal.done, .plan.reveal.done { transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease; }
+
+    /* b) Hover kartu & paket: hanya untuk perangkat dengan mouse, agar tidak "menempel" di layar sentuh */
+    @media (hover: hover) {
+      .card:hover { transform: translateY(-4px); box-shadow: 0 18px 36px rgba(11,23,48,.1); }
+      .plan:hover { transform: translateY(-4px); box-shadow: 0 22px 40px rgba(0,0,0,.35); border-color: rgba(159,189,255,.45); }
+      .plan.best:hover { box-shadow: 0 22px 44px rgba(47,107,255,.35); border-color: var(--white); }
+    }
+
+    /* c) Hero: teks muncul berurutan saat halaman dibuka, visual browser memudar masuk lalu melayang pelan */
+    @keyframes rise { from { opacity: 0; translate: 0 18px; } to { opacity: 1; translate: 0 0; } }
+    @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+    .hero-grid > div:first-child > * { animation: rise .8s cubic-bezier(.2,.7,.2,1) both; }
+    .hero-grid > div:first-child > :nth-child(2) { animation-delay: .1s; }
+    .hero-grid > div:first-child > :nth-child(3) { animation-delay: .2s; }
+    .hero-grid > div:first-child > :nth-child(4) { animation-delay: .3s; }
+    .browser { animation: fadein 1s .3s both, float 6s ease-in-out 1.3s infinite; }
+
+    /* ===== 14. RESPONSIF (mobile-first) =====
+       Gaya di atas sudah untuk HP. Aturan di bawah HANYA menambah tata letak
+       yang lebih lebar: tablet (640px), laptop (960px), dan layar lebar (1280px). */
+    @media (min-width: 640px) {
+      .btn { width: auto; }
+      form .btn, .plan .btn { width: 100%; }
+      .hero { padding: 4.5rem 0 5rem; }
+      .case { padding: 2rem; }
+      form { padding: 2rem; }
+    }
+    @media (min-width: 960px) {
+      section { padding: 5.5rem 0; }
+      .head { margin-bottom: 2.75rem; }
+      /* Navbar: menu jadi satu baris, tombol ☰ disembunyikan */
+      .burger { display: none; }
+      .menu { display: flex; position: static; flex-direction: row; align-items: center; gap: 1.75rem; padding: 0; background: none; border: 0; box-shadow: none;
+        visibility: visible; opacity: 1; transform: none; pointer-events: auto; transition: none; }
+      .menu a { min-height: 44px; font-size: .97rem; }
+      .menu .btn { width: auto; margin-top: 0; padding: .4rem 1.1rem; }
+      /* Hero dua kolom: teks kiri, visual kanan */
+      .hero { padding: 5rem 0 6rem; }
+      .hero-grid { grid-template-columns: 1.05fr .95fr; gap: 3.5rem; }
+      .hero h1 { font-size: clamp(2.8rem, 4.8vw, 4rem); }
+      .hero p { font-size: 1.15rem; }
+      /* Tiga kolom untuk layanan dan paket harga */
+      .cards, .plans { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+      .case { grid-template-columns: 1.1fr 1fr; gap: 3rem; padding: 2.25rem; }
+      .case .shot { min-height: 260px; padding: 2rem; }
+      /* Proses kerja: lima kolom mendatar */
+      .steps { grid-template-columns: repeat(5, 1fr); gap: 1.25rem; }
+      .step { padding: 3.2rem 0 0; }
+      .step::after { top: 19px; bottom: auto; left: 38px; right: -1.25rem; width: auto; height: 2px; }
+      .step:last-child::after { display: none; }
+      .contact-grid { grid-template-columns: .9fr 1.1fr; gap: 3rem; }
+    }
+    /* ===== 15. ADEGAN SINEMATIK (terhubung dengan scroll) =====
+       Cara kerja: JavaScript (fungsi "perbarui") mengisi variabel --p (0 sampai 1) pada elemen [data-scroll]
+       sesuai posisi scroll. CSS mengubah --p menjadi gerakan: parallax, zoom, blur, redup-terang.
+       --k = tingkat "terang/fokus": naik dari 0 ke 1 saat elemen mendekati tengah layar. */
+    html { --amp: .6; }                          /* kekuatan parallax: lembut di HP */
+    body { overflow-x: clip; }                   /* gerakan ke samping tidak membuat halaman bisa digeser */
+    [data-scroll] { --k: clamp(0, calc((var(--p, 1) - var(--s, .3)) * var(--g, 4)), 1); }
+    main > section > .container { position: relative; z-index: 1; }
+    main > section:not(#beranda) { position: relative; }
+    /* Sambungan antar-adegan: warna adegan sebelumnya memudar ke adegan berikutnya, tanpa garis tegas */
+    main > section:not(#beranda)::before { content: ""; position: absolute; inset: 0 0 auto 0; height: clamp(56px, 14vw, 140px); background: linear-gradient(var(--prev, transparent), transparent); pointer-events: none; }
+    #masalah, #layanan, #faq, #kontak { --prev: var(--navy); }
+    #keunggulan, #harga, #penutup { --prev: var(--white); }
+    #portofolio { --prev: var(--navy-2); }
+    #proses { --prev: var(--mist); }
+    #kontak { --prev: var(--navy-2); }
+
+    .masalah, .keunggulan, .finale, .pricing { overflow: hidden; }
+    .masalah, .keunggulan, .finale { color: var(--white); }
+    .masalah { background: var(--navy); }
+    .keunggulan { background: var(--navy-2); }
+    .finale { background: linear-gradient(180deg, var(--navy), var(--navy-2)); text-align: center; padding: 5rem 0; }
+    /* Cahaya latar (hanya hiasan) */
+    .hero { position: relative; }
+    .hero::before { content: ""; position: absolute; right: -140px; top: -180px; width: 560px; height: 560px; background: radial-gradient(circle, rgba(47,107,255,.32), transparent 65%); pointer-events: none; }
+    .masalah::after, .pricing::after, .finale::after { content: ""; position: absolute; left: 50%; width: min(900px, 140vw); aspect-ratio: 1; translate: -50% 0; pointer-events: none; background: radial-gradient(circle, rgba(47,107,255,.26), transparent 62%); }
+    .masalah::after { top: 15%; }
+    .pricing::after { top: 25%; opacity: .45; }
+    .finale::after { bottom: -45%; }
+
+    /* Masalah */
+    .scenes { display: grid; gap: clamp(1.75rem, 6vw, 3rem); margin-bottom: 3rem; }
+    .scene-line { font-size: clamp(1.5rem, 6vw, 2.7rem); font-weight: 700; line-height: 1.2; letter-spacing: -.02em; max-width: 24ch; color: #dfe7fb; }
+    .scene-line b { color: var(--sky); }
+    .solusi { max-width: 560px; border-left: 3px solid var(--blue); padding-left: 1.25rem; }
+    .solusi h3 { font-size: clamp(1.5rem, 5vw, 2rem); }
+    .solusi p { color: #c3cde6; margin: .6rem 0 1.5rem; }
+    /* Keunggulan */
+    .keunggulan-grid { display: grid; gap: 2.25rem; }
+    .statement { font-size: clamp(1.9rem, 7vw, 3.2rem); font-weight: 800; line-height: 1.1; letter-spacing: -.03em; max-width: 16ch; transform-origin: left center; }
+    .benefits { display: grid; gap: 1rem; }
+    .benefit { border: 1px solid rgba(255,255,255,.14); border-radius: 16px; padding: 1.4rem; background: rgba(255,255,255,.04); }
+    .benefit p { color: #b4c0de; margin-top: .4rem; font-size: 1rem; }
+    /* Penutup */
+    .finale h2 { font-size: clamp(2.1rem, 8vw, 4.2rem); font-weight: 800; max-width: 16ch; margin-inline: auto; }
+    .finale > .container > p { color: #c3cde6; max-width: 46ch; margin: 1.1rem auto 0; }
+    .finale .actions { justify-content: center; }
+    .plan { position: relative; }
+    .cards { overflow-x: clip; }   /* kartu yang masuk dari samping tidak melebarkan halaman */
+
+    @media (min-width: 960px) {
+      html { --amp: 1; }
+      .keunggulan-grid { grid-template-columns: .9fr 1.1fr; gap: 3.5rem; align-items: center; }
+      .benefits { grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+      .scenes { margin-bottom: 4rem; }
+      .solusi { padding-left: 1.75rem; }
+      .finale { padding: 8rem 0; }
+      .plan.best { scale: 1.04; }          /* paket unggulan sedikit lebih besar */
+    }
+
+    /* ---- Semua GERAKAN ada di blok ini. Pengguna "kurangi gerak" melihat halaman statis yang tetap lengkap. ---- */
+    @media (prefers-reduced-motion: no-preference) {
+      /* Efek muncul bervariasi: kabur-ke-fokus, zoom, dan masuk dari samping (hanya di layar lebar) */
+      .reveal[data-fx="focus"] { filter: blur(14px); transition: opacity .9s ease, translate .9s ease, filter .9s ease; }
+      .reveal[data-fx="focus"].in { filter: blur(0); }
+      .reveal.in.done { filter: none; }
+      .reveal[data-fx="zoom"] { scale: .9; transition: opacity .8s ease, translate .8s ease, scale .8s cubic-bezier(.2,.7,.2,1); }
+      .reveal[data-fx="zoom"].in { scale: 1; }
+      @media (min-width: 960px) {
+        /* :not(.in) memastikan posisi awal ini tidak menimpa posisi akhir saat elemen sudah muncul */
+        .reveal[data-fx="left"]:not(.in) { translate: -44px 0; }
+        .reveal[data-fx="right"]:not(.in) { translate: 44px 0; }
+      }
+      /* Hero: judul kabur-ke-fokus saat dibuka; saat scroll, teks naik & memudar, visual turun & membesar sedikit */
+      @keyframes focusin { from { opacity: 0; translate: 0 24px; filter: blur(14px); } to { opacity: 1; translate: 0 0; filter: blur(0); } }
+      .hero-grid > div:first-child > h1 { animation: focusin 1.2s cubic-bezier(.2,.7,.2,1) backwards; }
+      .hero-grid > div:first-child { translate: 0 calc(var(--p, 0) * -44px * var(--amp)); opacity: calc(1 - var(--p, 0) * .9); }
+      .hero .browser { translate: 0 calc(var(--p, 0) * 44px * var(--amp)); scale: calc(1 + var(--p, 0) * .08); }
+      .hero::before { translate: 0 calc(var(--p, 0) * 160px * var(--amp)); }
+      /* Masalah: tiap kalimat makin terang & fokus saat naik ke tengah layar; cahaya latar ikut bergeser */
+      .masalah::after { translate: -50% calc((var(--p, .5) - .5) * 300px * var(--amp)); }
+      .scene-line { opacity: calc(.16 + var(--k) * .84); filter: blur(calc((1 - var(--k)) * 6px)); translate: calc((1 - var(--k)) * 24px) 0; }
+      /* Keunggulan: pernyataan besar zoom-out hingga ukuran normal */
+      .statement { scale: calc(1.12 - var(--k) * .12); opacity: calc(.25 + var(--k) * .75); }
+      /* Portofolio: kartu demo zoom-in */
+      .case .shot { scale: calc(.93 + var(--k) * .07); }
+      .case .shot strong { translate: 0 calc((1 - var(--k)) * 24px); }
+      /* Harga: sorotan cahaya menguat saat bagian ini mendekati tengah layar; paket unggulan bercahaya */
+      .pricing::after { opacity: calc(var(--k, 0) * .9); }
+      .plan.best { box-shadow: 0 24px 70px rgba(47,107,255, calc(.12 + var(--k, 0) * .4)); }
+      /* Proses kerja: langkah menyala berurutan (kelas .reached dari JavaScript), garis penghubung terisi */
+      .step h3, .step p { opacity: .4; transition: opacity .6s ease; }
+      .step.reached h3, .step.reached p { opacity: 1; }
+      .step::before { transition: background-color .5s ease, box-shadow .5s ease; }
+      .step.reached::before { background: var(--blue-dark); box-shadow: 0 0 0 6px rgba(47,107,255,.2); }
+      .step::after { background: linear-gradient(var(--blue), var(--blue)) no-repeat, var(--line); background-size: 100% 0%, auto; transition: background-size .8s ease; }
+      .step.reached::after { background-size: 100% 100%, auto; }
+      @media (min-width: 960px) {
+        .step::after { background-size: 0% 100%, auto; }
+        .step.reached::after { background-size: 100% 100%, auto; }
+        .step::before, .step::after, .step h3, .step p { transition-delay: calc(var(--i, 0) * .12s); }
+      }
+      /* Penutup: judul zoom-in dan fokus, cahaya naik perlahan */
+      .finale h2 { scale: calc(.92 + var(--k) * .08); filter: blur(calc((1 - var(--k)) * 8px)); }
+      .finale::after { translate: -50% calc((.5 - var(--p, .5)) * 240px * var(--amp)); }
+    }
+
+    /* Hormati pengguna yang mematikan animasi di perangkatnya */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+      .reveal { opacity: 1; translate: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== NAVBAR: tautan #id menuju section dengan id yang sama ===== -->
+  <header>
+    <div class="container nav">
+      <a href="#beranda" class="logo">Famy <span>Digital Studio</span></a>
+      <nav aria-label="Menu utama">
+        <div class="menu" id="menu">
+          <a href="#layanan">Layanan</a>
+          <a href="#portofolio">Portofolio</a>
+          <a href="#proses">Proses</a>
+          <a href="#harga">Harga</a>
+          <a href="#faq">FAQ</a>
+          <a href="https://wa.me/6285923305899?text=Halo%20Famy%20Digital%20Studio%2C%20saya%20ingin%20konsultasi%20gratis%20untuk%20pembuatan%20website." class="btn btn-primary" target="_blank" rel="noopener">Konsultasi Gratis</a>
+        </div>
+      </nav>
+      <!-- Tombol ☰ sengaja diletakkan TERAKHIR agar flex (space-between) menaruhnya di kanan -->
+      <button class="burger" id="burger" aria-label="Buka menu" aria-expanded="false" aria-controls="menu">&#9776;</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ===== HERO ===== -->
+    <section class="hero" id="beranda" data-scroll="out">
+      <div class="container hero-grid">
+        <div>
+          <h1>Website rapi untuk bisnis Anda, <em>siap menerima pelanggan.</em></h1>
+          <p>Kami membantu UMKM dan bisnis kecil punya website yang jelas, cepat dibuka di HP, dan mudah dihubungi lewat WhatsApp.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="https://wa.me/6285923305899?text=Halo%20Famy%20Digital%20Studio%2C%20saya%20ingin%20konsultasi%20gratis%20untuk%20pembuatan%20website." target="_blank" rel="noopener">Konsultasi Gratis</a>
+            <a class="btn btn-outline" href="#portofolio">Lihat proyek demo</a>
+          </div>
+          <p class="hero-note">Konsultasi awal tanpa biaya dan tanpa kewajiban.</p>
+        </div>
+        <!-- Visual website (dibuat dengan CSS, bukan gambar) -->
+        <div class="browser" aria-hidden="true">
+          <div class="browser-bar"><i></i><i></i><i></i><b>websiteanda.com</b></div>
+          <div class="browser-body">
+            <div class="sk hero-sk"></div>
+            <div class="sk line w80"></div>
+            <div class="sk line w60"></div>
+            <div class="sk btn-sk"></div>
+            <div class="sk-row"><div class="sk"></div><div class="sk"></div><div class="sk"></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ADEGAN 2: MASALAH =====
+         Setiap kalimat (.scene-line) punya data-scroll: makin mendekati tengah layar, makin terang dan fokus. -->
+    <section class="masalah" id="masalah" data-scroll>
+      <div class="container">
+        <div class="head reveal" data-fx="focus">
+          <h2>Usaha Anda bagus. Tapi apakah mudah ditemukan?</h2>
+        </div>
+        <div class="scenes">
+          <p class="scene-line" data-scroll>Calon pelanggan sering mengecek <b>lewat HP</b> sebelum menghubungi.</p>
+          <p class="scene-line" data-scroll>Tanpa website, harga, alamat, dan jam buka <b>tersebar di mana-mana</b>.</p>
+          <p class="scene-line" data-scroll>Akibatnya mereka <b>bertanya berulang</b>, atau memilih usaha lain.</p>
+        </div>
+        <div class="solusi reveal" data-fx="focus">
+          <h3>Satu website yang rapi menjawab semuanya.</h3>
+          <p>Profil, layanan, harga, dan tombol WhatsApp ada di satu tempat, nyaman dibuka di HP.</p>
+          <a class="btn btn-primary" href="#layanan">Lihat layanan kami</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== LAYANAN ===== -->
+    <section id="layanan">
+      <div class="container">
+        <div class="head reveal" data-fx="focus">
+          <h2>Tiga jenis website untuk kebutuhan yang berbeda</h2>
+          <p>Pilih yang paling dekat dengan tujuan bisnis Anda. Tidak yakin? Ceritakan saja, kami bantu menentukan.</p>
+        </div>
+        <div class="cards">
+          <article class="card reveal" data-fx="left">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg></div>
+            <h3>Website profil bisnis</h3>
+            <p>Etalase online agar calon pelanggan percaya dan mudah menemukan Anda.</p>
+            <ul><li>Tentang usaha &amp; layanan</li><li>Alamat, jam buka, peta</li><li>Tombol WhatsApp</li></ul>
+          </article>
+          <article class="card reveal" data-fx="up">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16l-1.5 12h-13zM8 7a4 4 0 0 1 8 0"/></svg></div>
+            <h3>Website katalog produk</h3>
+            <p>Tampilkan produk lengkap dengan foto, harga, dan tombol pesan.</p>
+            <ul><li>Daftar produk per kategori</li><li>Pesan langsung via WhatsApp</li><li>Mudah diperbarui</li></ul>
+          </article>
+          <article class="card reveal" data-fx="right">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l5-5 3 3 8-9M15 9h5v5"/></svg></div>
+            <h3>Landing page promosi</h3>
+            <p>Satu halaman fokus untuk promo, peluncuran produk, atau iklan.</p>
+            <ul><li>Satu tujuan, satu tombol aksi</li><li>Cepat dibuka di HP</li><li>Cocok untuk iklan sosial media</li></ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ADEGAN 4: KEUNGGULAN (hanya berisi hal yang memang ada di paket & layanan kami) ===== -->
+    <section class="keunggulan" id="keunggulan">
+      <div class="container keunggulan-grid">
+        <h2 class="statement" data-scroll>Dibuat untuk dibuka di HP, dipahami dalam sekejap.</h2>
+        <div class="benefits">
+          <article class="benefit reveal" data-fx="zoom"><h3>Nyaman di HP</h3><p>Setiap halaman dirancang mobile-first, lalu disesuaikan untuk tablet dan laptop.</p></article>
+          <article class="benefit reveal" data-fx="zoom"><h3>Harga jelas sejak awal</h3><p>Harga awal tertulis di paket, dan biaya final disepakati sebelum pengerjaan.</p></article>
+          <article class="benefit reveal" data-fx="zoom"><h3>Mudah dihubungi</h3><p>Tombol WhatsApp membuat calon pelanggan bisa langsung bertanya atau memesan.</p></article>
+          <article class="benefit reveal" data-fx="zoom"><h3>Revisi tertulis</h3><p>Jumlah revisi disebutkan di setiap paket, jadi tidak ada kejutan di tengah jalan.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== PORTOFOLIO ===== -->
+    <section class="portfolio" id="portofolio">
+      <div class="container">
+        <div class="head reveal">
+          <h2>Portofolio</h2>
+          <p>Contoh hasil kerja kami dalam bentuk proyek demo.</p>
+        </div>
+        <article class="case reveal" data-scroll style="--s:.15;--g:3">
+          <div class="shot" aria-hidden="true"><strong>Bengkel Maju Jaya</strong><span>Website profil bengkel</span></div>
+          <div>
+            <h3>Bengkel Maju Jaya</h3>
+            <p>Proyek demo website profil untuk bengkel fiktif. Memuat profil usaha, daftar layanan dan harga, galeri, jam buka, dan tombol WhatsApp. Bisa dipakai sebagai gambaran hasil akhir untuk usaha sejenis.</p>
+            <ul class="tags"><li>Profil bisnis</li><li>Responsif</li><li>Tombol WhatsApp</li></ul>
+            <!-- target="_blank" membuka tab baru; rel="noopener" untuk keamanan -->
+            <a class="btn btn-primary" href="https://courageous-sprinkles-c9516a.netlify.app/" target="_blank" rel="noopener">Buka proyek demo</a>
+            <p class="small">Ini proyek demo, bukan klien sungguhan.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===== PROSES KERJA (urutan langkah, jadi memakai nomor) ===== -->
+    <section id="proses">
+      <div class="container">
+        <div class="head reveal">
+          <h2>Proses kerja yang jelas</h2>
+          <p>Anda tahu apa yang terjadi di setiap tahap.</p>
+        </div>
+        <ol class="steps" style="list-style:none;padding:0;margin:0">
+          <li class="step reveal"><h3>Konsultasi</h3><p>Kita bahas usaha, target pelanggan, dan kebutuhan website.</p></li>
+          <li class="step reveal"><h3>Desain</h3><p>Anda melihat rancangan tampilan sebelum pengerjaan.</p></li>
+          <li class="step reveal"><h3>Pengerjaan</h3><p>Desain diubah menjadi website yang berfungsi di HP dan laptop.</p></li>
+          <li class="step reveal"><h3>Revisi</h3><p>Anda memeriksa hasilnya, kami perbaiki sesuai kesepakatan.</p></li>
+          <li class="step reveal"><h3>Publikasi</h3><p>Website dipasang online dan siap dibagikan ke pelanggan.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ===== PAKET HARGA ===== -->
+    <section class="pricing" id="harga" data-scroll style="--s:.15;--g:3">
+      <div class="container">
+        <div class="head reveal">
+          <h2>Paket harga awal</h2>
+          <p>Mulai dari paket di bawah, lalu kita sesuaikan dengan kebutuhan proyek Anda.</p>
+        </div>
+        <div class="plans">
+          <article class="plan reveal">
+            <h3>Landing Page</h3>
+            <p class="from">Harga awal mulai</p>
+            <p class="amount">Rp 750.000</p>
+            <p class="desc">Satu halaman untuk promo atau perkenalan singkat.</p>
+            <ul><li>1 halaman</li><li>Tampilan responsif</li><li>Tombol WhatsApp</li><li>1 kali revisi</li></ul>
+            <a class="btn btn-outline" href="https://wa.me/6285923305899?text=Halo%20Famy%20Digital%20Studio%2C%20saya%20tertarik%20dengan%20paket%20Landing%20Page%20%28harga%20awal%20Rp%20750.000%29.%20Boleh%20saya%20konsultasi%20dulu%3F" target="_blank" rel="noopener">Pilih paket ini</a>
+          </article>
+          <article class="plan best reveal">
+            <span class="label">Paling sering dipilih</span>
+            <h3>Profil Bisnis</h3>
+            <p class="from">Harga awal mulai</p>
+            <p class="amount">Rp 1.800.000</p>
+            <p class="desc">Website lengkap untuk memperkenalkan usaha Anda.</p>
+            <ul><li>Hingga 5 bagian halaman</li><li>Layanan, galeri, dan kontak</li><li>Peta dan jam buka</li><li>2 kali revisi</li></ul>
+            <a class="btn btn-primary" href="https://wa.me/6285923305899?text=Halo%20Famy%20Digital%20Studio%2C%20saya%20tertarik%20dengan%20paket%20Profil%20Bisnis%20%28harga%20awal%20Rp%201.800.000%29.%20Boleh%20saya%20konsultasi%20dulu%3F" target="_blank" rel="noopener">Pilih paket ini</a>
+          </article>
+          <article class="plan reveal">
+            <h3>Katalog Produk</h3>
+            <p class="from">Harga awal mulai</p>
+            <p class="amount">Rp 2.500.000</p>
+            <p class="desc">Untuk usaha dengan banyak produk yang ingin ditampilkan.</p>
+            <ul><li>Daftar produk per kategori</li><li>Tombol pesan per produk</li><li>Pencarian produk sederhana</li><li>2 kali revisi</li></ul>
+            <a class="btn btn-outline" href="https://wa.me/6285923305899?text=Halo%20Famy%20Digital%20Studio%2C%20saya%20tertarik%20dengan%20paket%20Katalog%20Produk%20%28harga%20awal%20Rp%202.500.000%29.%20Boleh%20saya%20konsultasi%20dulu%3F" target="_blank" rel="noopener">Pilih paket ini</a>
+          </article>
+        </div>
+        <p class="price-note">Harga di atas adalah harga awal dan dapat berubah sesuai kebutuhan proyek, misalnya jumlah halaman, jumlah produk, fitur tambahan, atau pembuatan konten. Biaya final disepakati setelah konsultasi, sebelum pengerjaan dimulai.</p>
+      </div>
+    </section>
+
+    <!-- ===== FAQ ===== -->
+    <section id="faq">
+      <div class="container">
+        <div class="head reveal"><h2>Pertanyaan yang sering diajukan</h2></div>
+        <div class="faq-list reveal">
+          <details><summary>Saya belum punya logo atau foto produk. Tetap bisa?</summary><div class="faq-body"><p>Bisa. Kita mulai dengan bahan yang Anda punya, lalu kami sarankan apa yang perlu ditambah. Foto yang jelas dari HP biasanya sudah cukup untuk awal.</p></div></details>
+          <details><summary>Berapa lama website selesai?</summary><div class="faq-body"><p>Tergantung jenis dan kesiapan bahan. Estimasi waktu kami sampaikan saat konsultasi, sebelum Anda memutuskan.</p></div></details>
+          <details><summary>Apakah harga sudah termasuk domain dan hosting?</summary><div class="faq-body"><p>Itu dibahas saat konsultasi karena kebutuhan tiap usaha berbeda. Rincian biaya ditulis jelas sebelum Anda setuju.</p></div></details>
+          <details><summary>Apakah website bisa diubah setelah jadi?</summary><div class="faq-body"><p>Bisa. Perubahan kecil dan pembaruan konten dapat dibahas sebagai layanan lanjutan.</p></div></details>
+          <details><summary>Apakah tampilannya nyaman dibuka di HP?</summary><div class="faq-body"><p>Ya. Setiap website kami rancang responsif, sehingga tampil rapi di HP, tablet, dan laptop.</p></div></details>
+          <details><summary>Bagaimana cara mulai?</summary><div class="faq-body"><p>Isi formulir di bagian kontak. Pesan Anda akan terbuka di WhatsApp dan tinggal dikirim.</p></div></details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ADEGAN PENUTUP: ajakan WhatsApp =====
+         Tombol WhatsApp memakai nomor yang sama dengan semua tombol WhatsApp lain di halaman ini. -->
+    <section class="finale" id="penutup" data-scroll style="--s:.2;--g:3">
+      <div class="container">
+        <h2>Siap punya website yang bekerja untuk usaha Anda?</h2>
+        <p>Ceritakan kebutuhan Anda lewat WhatsApp. Konsultasi awal gratis dan tanpa kewajiban.</p>
+        <div class="actions">
+          <a class="btn btn-wa" id="waCta" href="https://wa.me/6285923305899?text=Halo%20Famy%20Digital%20Studio%2C%20saya%20ingin%20konsultasi%20gratis%20untuk%20pembuatan%20website." target="_blank" rel="noopener">Chat via WhatsApp</a>
+          <a class="btn btn-outline" href="#kontak">Isi formulir</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== KONTAK ===== -->
+    <section class="contact" id="kontak">
+      <div class="container contact-grid">
+        <div class="head reveal">
+          <h2>Mulai dengan konsultasi gratis</h2>
+          <p>Ceritakan sedikit tentang usaha Anda. Setelah menekan tombol, WhatsApp terbuka dengan pesan yang sudah terisi, tinggal dikirim.</p>
+        </div>
+        <!-- Formulir ini tidak dikirim ke server; isinya dipakai JavaScript untuk menyusun pesan WhatsApp -->
+        <form id="form" class="reveal">
+          <label>Nama Anda
+            <input id="nama" type="text" placeholder="Contoh: Budi" required>
+          </label>
+          <label>Jenis website yang dibutuhkan
+            <select id="paket">
+              <option>Belum tahu, ingin konsultasi dulu</option>
+              <option>Website profil bisnis</option>
+              <option>Website katalog produk</option>
+              <option>Landing page promosi</option>
+            </select>
+          </label>
+          <label>Ceritakan usaha Anda
+            <textarea id="pesan" rows="4" placeholder="Contoh: Saya punya toko kue dan ingin website untuk menampilkan menu."></textarea>
+          </label>
+          <p id="notice" role="alert"></p>
+          <button class="btn btn-wa" type="submit">Kirim lewat WhatsApp</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div class="container foot">
+      <p>&copy; <span id="year"></span> <strong>Famy Digital Studio</strong>. Semua hak dilindungi.</p>
+      <nav aria-label="Menu footer">
+        <a href="#layanan">Layanan</a><a href="#portofolio">Portofolio</a><a href="#harga">Harga</a><a href="#kontak">Kontak</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    /* ===== NOMOR WHATSAPP =====
+       Format internasional Indonesia: 62 + nomor tanpa 0 di depan (085923305899 -> 6285923305899).
+       Dipakai oleh formulir kontak. Tombol lain memakai tautan https://wa.me/6285923305899?text=... langsung di HTML,
+       jadi jika nomor diganti, cari "6285923305899" lalu ganti di seluruh file. */
+    const WA_NUMBER = "6285923305899";
+    const nomorSiap = /^62\d{8,13}$/.test(WA_NUMBER);
+
+    /* ===== NAVIGASI ===== */
+    const burger = document.getElementById("burger");
+    const menu = document.getElementById("menu");
+    function setMenu(buka) {
+      menu.classList.toggle("open", buka);
+      burger.setAttribute("aria-expanded", buka);
+      burger.setAttribute("aria-label", buka ? "Tutup menu" : "Buka menu");
+    }
+    burger.addEventListener("click", () => setMenu(!menu.classList.contains("open")));
+    menu.querySelectorAll("a").forEach(a => a.addEventListener("click", () => setMenu(false)));
+    document.addEventListener("keydown", e => { if (e.key === "Escape") setMenu(false); });          // Esc menutup menu
+    document.addEventListener("click", e => { if (!e.target.closest("header")) setMenu(false); });   // klik di luar menutup menu
+
+    // Menandai menu yang sesuai dengan bagian yang sedang dilihat
+    const links = [...menu.querySelectorAll("a:not(.btn)")];
+    const pengamatMenu = new IntersectionObserver(entries => {
+      entries.forEach(en => {
+        if (en.isIntersecting) {
+          links.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + en.target.id));
+        }
+      });
+    }, { rootMargin: "-45% 0px -50% 0px" });
+    document.querySelectorAll("main section[id]").forEach(s => pengamatMenu.observe(s));
+
+    /* ===== ANIMASI MUNCUL SAAT SCROLL ===== */
+    // Elemen dalam satu kelompok (mis. 3 kartu) muncul bergantian dengan jeda 90 ms
+    const pengamatMuncul = new IntersectionObserver((entries, obs) => {
+      entries.forEach(en => {
+        if (!en.isIntersecting) return;
+        const el = en.target;
+        const urutan = [...el.parentElement.children].filter(c => c.classList.contains("reveal")).indexOf(el);
+        const jeda = Math.min(urutan, 4) * 90;
+        el.style.transitionDelay = jeda + "ms";
+        el.classList.add("in");
+        // Setelah animasi selesai: hapus jeda agar efek hover tidak ikut tertunda
+        setTimeout(() => { el.style.transitionDelay = ""; el.classList.add("done"); }, jeda + 800);
+        obs.unobserve(el);
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll(".reveal").forEach(el => pengamatMuncul.observe(el));
+
+    /* ===== FAQ: ANIMASI BUKA-TUTUP =====
+       <details> bawaan HTML tidak bisa dianimasikan, jadi tinggi .faq-body dianimasikan lewat Web Animations API.
+       Kelas .is-open dipakai untuk memutar panah. */
+    const kurangiGerak = window.matchMedia("(prefers-reduced-motion: reduce)");
+    document.querySelectorAll("details").forEach(d => {
+      const judul = d.querySelector("summary");
+      const isi = d.querySelector(".faq-body");
+      let anim = null;
+      judul.addEventListener("click", e => {
+        e.preventDefault();                                   // kita atur sendiri buka-tutupnya
+        const tinggiAwal = d.open ? isi.offsetHeight : 0;   // tinggi saat ini (0 bila tertutup; aman bila diklik di tengah animasi)
+        if (anim) anim.cancel();
+        const membuka = !d.classList.contains("is-open");
+        d.classList.toggle("is-open", membuka);
+        if (membuka) d.open = true;
+        if (kurangiGerak.matches) { d.open = membuka; return; }   // tanpa animasi bila pengguna meminta
+        const tinggiAkhir = membuka ? isi.scrollHeight : 0;
+        anim = isi.animate(
+          [{ height: tinggiAwal + "px", opacity: membuka ? 0 : 1 }, { height: tinggiAkhir + "px", opacity: membuka ? 1 : 0 }],
+          { duration: 320, easing: "cubic-bezier(.2,.7,.2,1)", fill: "forwards" }
+        );
+        const animIni = anim;
+        anim.onfinish = () => { if (!membuka) d.open = false; animIni.cancel(); if (anim === animIni) anim = null; };
+      });
+    });
+
+    /* ===== MESIN SCROLL SINEMATIK =====
+       Satu pendengar scroll yang ringan (dibatasi 1x per frame lewat requestAnimationFrame).
+       Tugasnya: (1) mengisi --p pada elemen [data-scroll], (2) mengubah header, (3) menyalakan langkah proses. */
+    const gerakOk = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const header = document.querySelector("header");
+    const adegan = [...document.querySelectorAll("[data-scroll]")];
+    const langkah = [...document.querySelectorAll(".step")];
+    langkah.forEach((l, i) => l.style.setProperty("--i", i));   // urutan untuk jeda animasi
+    const batas = (n, min, max) => Math.min(max, Math.max(min, n));
+    let menunggu = false;
+
+    function perbarui() {
+      menunggu = false;
+      const y = window.scrollY, vh = window.innerHeight;
+      header.classList.toggle("scrolled", y > 24);               // header mengecil & lebih solid
+      const maks = document.documentElement.scrollHeight - vh;
+      document.documentElement.style.setProperty("--sp", maks > 0 ? (y / maks).toFixed(4) : 0);   // garis progres
+      if (!gerakOk) { langkah.forEach(l => l.classList.add("reached")); return; }
+      adegan.forEach(el => {
+        const r = el.getBoundingClientRect();
+        if (r.bottom < -150 || r.top > vh + 150) return;         // jauh di luar layar: lewati (hemat tenaga)
+        // "out" = seberapa jauh elemen sudah keluar lewat atas; lainnya = progres melintasi layar (0 masuk, 1 keluar)
+        const p = el.dataset.scroll === "out" ? batas(-r.top / r.height, 0, 1) : batas((vh - r.top) / (vh + r.height), 0, 1);
+        el.style.setProperty("--p", p.toFixed(3));
+      });
+      langkah.forEach(l => { if (l.getBoundingClientRect().top < vh * 0.78) l.classList.add("reached"); });
+    }
+    window.addEventListener("scroll", () => { if (!menunggu) { menunggu = true; requestAnimationFrame(perbarui); } }, { passive: true });
+    window.addEventListener("resize", perbarui);
+    perbarui();
+
+    const selectPaket = document.getElementById("paket");   // pilihan jenis website di formulir
+
+    /* ===== FORMULIR -> PESAN WHATSAPP ===== */
+    const notice = document.getElementById("notice");
+    document.getElementById("form").addEventListener("submit", e => {
+      e.preventDefault(); // cegah halaman dimuat ulang
+      const nama = document.getElementById("nama").value.trim();
+      const cerita = document.getElementById("pesan").value.trim();
+      const teks = `Halo Famy Digital Studio, saya ${nama}. Saya tertarik dengan: ${selectPaket.value}.` +
+                   (cerita ? ` Tentang usaha saya: ${cerita}` : "") + " Mohon info konsultasi gratisnya.";
+
+      if (!nomorSiap) {
+        notice.textContent = "Nomor WhatsApp belum diatur. Pemilik website perlu mengisi WA_NUMBER di kode JavaScript terlebih dahulu.";
+        notice.classList.add("show");
+        return;
+      }
+      notice.classList.remove("show");
+      window.open("https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(teks), "_blank", "noopener");
+    });
+
+    // Tahun otomatis di footer
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
